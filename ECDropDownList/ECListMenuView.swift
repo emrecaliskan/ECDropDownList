@@ -10,8 +10,8 @@ import UIKit
 
 
 class ECListMenuView: UIView, ECListItemDelegate {
-
-
+    
+    
     var listMenu:ECListMenu
     var listItemViews = [ECListItemView]()
     var collapsedHeight = CGFloat(40.0)
@@ -21,16 +21,11 @@ class ECListMenuView: UIView, ECListItemDelegate {
     
     var currentlySelectedItemView:ECListItemView?
     
-    var expandedFrame:CGRect!
-    var collapsedFrame:CGRect!
-    
     init(frame:CGRect, listMenu:ECListMenu) {
         self.listMenu = listMenu
         super.init(frame: frame)
         
-        collapsedFrame = self.frame
-        expandedFrame = CGRectMake(self.frame.origin.x, self.frame.origin.y, self.frame.width, collapsedHeight * CGFloat(listMenu.items.count))
-
+        
         //Add Views to listItemViews Array
         for item in listMenu.items {
             let itemView = ECListItemView(listItem: item)
@@ -46,15 +41,15 @@ class ECListMenuView: UIView, ECListItemDelegate {
         //Create ItemView for the top view of the menu, with no action on press
         updateTopView(listItemViews.first!)
         updateSelectedListItemView(listItemViews.first!)
-   
+        
         firstLoad = false
     }
- 
+    
     required init(coder aDecoder: NSCoder) {
         self.listMenu = ECListMenu()
         super.init(coder: aDecoder)
     }
-
+    
     func didTapItem(listItemView:ECListItemView) {
         if state == "collapsed" {
             expandList()
@@ -72,7 +67,7 @@ class ECListMenuView: UIView, ECListItemDelegate {
     
     func expandList(){
         topView.removeFromSuperview()
-        self.frame = expandedFrame
+        self.frame = getExpandedFrame()
         for var index = 0; index < listMenu.items.count; ++index {
             UIView.animateWithDuration(0.2, animations: { () -> Void in
                 let listItemView = self.listItemViews[index]
@@ -90,7 +85,7 @@ class ECListMenuView: UIView, ECListItemDelegate {
                 listItemView.alpha = 1
             })
         }
-        self.frame = collapsedFrame
+        self.frame = getCollapsedFrame()
     }
     
     func updateTopView(newListItemView:ECListItemView){
@@ -107,12 +102,12 @@ class ECListMenuView: UIView, ECListItemDelegate {
                 self.topView.alpha = 1
             })
         }
-
+        
     }
     
     func updateSelectedListItemView(selectedListItemView:ECListItemView){
         if currentlySelectedItemView != selectedListItemView {
-
+            
             currentlySelectedItemView?.listItem.isSelected = false
             selectedListItemView.listItem.isSelected = true
             
@@ -122,14 +117,22 @@ class ECListMenuView: UIView, ECListItemDelegate {
         }
     }
     
+    func getExpandedFrame() -> CGRect {
+        return CGRectMake(self.frame.origin.x, self.frame.origin.y, self.frame.width, collapsedHeight * CGFloat(listMenu.items.count))
+    }
+    
+    func getCollapsedFrame() -> CGRect {
+        return CGRectMake(self.frame.origin.x, self.frame.origin.y, self.frame.width, collapsedHeight)
+    }
+    
     /*
     // Only override drawRect: if you perform custom drawing.
     // An empty implementation adversely affects performance during animation.
     override func drawRect(rect: CGRect) {
-        // Drawing code
+    // Drawing code
     }
     */
-
+    
 }
 
 
